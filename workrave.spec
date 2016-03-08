@@ -51,8 +51,10 @@ BuildRequires: pkgconfig(libmatepanelapplet-4.0)
 %endif
 
 Requires: dbus
+%if 0%{?fedora}
 Recommends: gstreamer1-plugins-base
 Recommends: gstreamer1-plugins-good
+%endif
 Obsoletes: %{name}-devel < %{version}-%{release}
 
 %description
