@@ -3,7 +3,7 @@
 %global	xfce		1
 
 Name: workrave
-Version: 1.10.10
+Version: 1.10.15
 Release: 1%{?dist}
 Summary: Program that assists in the recovery and prevention of RSI
 # Based on older packages by Dag Wieers <dag@wieers.com> and Steve Ratcliffe
@@ -13,7 +13,6 @@ URL: http://www.workrave.org/
 %global tag %(echo %{version} | sed -e 's/\\./_/g')
 Source0: https://github.com/rcaelers/workrave/archive/v%{tag}/%{name}-v%{tag}.tar.gz
 Patch1:  workrave-1.10.10-fix-translations.patch
-Patch2:  workrave-1.10.10-gnome-shell-versions.patch
 
 BuildRequires: libXtst-devel
 BuildRequires: libXScrnSaver-devel
@@ -104,7 +103,6 @@ This package provides an applet for the Xfce panel.
 %prep
 %setup -q -n workrave-%{tag}
 %patch1 -p1 -b .fixpl
-%patch2 -p1
 touch ChangeLog
 # https://bugzilla.redhat.com/show_bug.cgi?id=304121
 sed -i -e '/^DISTRIBUTION_HOME/s/\/$//' frontend/gtkmm/src/Makefile.*
@@ -214,6 +212,9 @@ desktop-file-install \
 %endif
 
 %changelog
+* Thu May 12 2016 Yaakov Selkowitz <yselkowi@redhat.com> - 1.10.15-1
+- new version (#1321458)
+
 * Fri Feb 26 2016 Yaakov Selkowitz <yselkowi@redhat.com> - 1.10.10-1
 - new version
 - Add Cinnamon, Indicator, MATE, Xfce applets
