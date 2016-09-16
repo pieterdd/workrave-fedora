@@ -3,7 +3,7 @@
 %global	xfce		1
 
 Name: workrave
-Version: 1.10.15
+Version: 1.10.16
 Release: 1%{?dist}
 Summary: Program that assists in the recovery and prevention of RSI
 # Based on older packages by Dag Wieers <dag@wieers.com> and Steve Ratcliffe
@@ -212,6 +212,9 @@ desktop-file-install \
 %endif
 
 %changelog
+* Fri Sep 16 2016 Yaakov Selkowitz <yselkowi@redhat.com> - 1.10.16-1
+- new version (#1376625)
+
 * Thu May 12 2016 Yaakov Selkowitz <yselkowi@redhat.com> - 1.10.15-1
 - new version (#1321458)
 
