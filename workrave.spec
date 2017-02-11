@@ -4,7 +4,7 @@
 
 Name: workrave
 Version: 1.10.16
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: Program that assists in the recovery and prevention of RSI
 # Based on older packages by Dag Wieers <dag@wieers.com> and Steve Ratcliffe
 License: GPLv3+
@@ -212,6 +212,9 @@ desktop-file-install \
 %endif
 
 %changelog
+* Sat Feb 11 2017 Fedora Release Engineering <releng@fedoraproject.org> - 1.10.16-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
+
 * Fri Sep 16 2016 Yaakov Selkowitz <yselkowi@redhat.com> - 1.10.16-1
 - new version (#1376625)
 
