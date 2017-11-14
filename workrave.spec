@@ -151,7 +151,7 @@ desktop-file-install \
 
 
 %files -f %{name}.lang
-%doc AUTHORS COPYING NEWS README
+%doc AUTHORS COPYING NEWS README.md
 %{_bindir}/workrave
 %{_datadir}/workrave/
 %{_datadir}/sounds/workrave/
