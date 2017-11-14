@@ -3,8 +3,8 @@
 %global	xfce		1
 
 Name: workrave
-Version: 1.10.16
-Release: 4%{?dist}
+Version: 1.10.20
+Release: 1%{?dist}
 Summary: Program that assists in the recovery and prevention of RSI
 # Based on older packages by Dag Wieers <dag@wieers.com> and Steve Ratcliffe
 License: GPLv3+
@@ -212,6 +212,9 @@ desktop-file-install \
 %endif
 
 %changelog
+* Tue Nov 14 2017 Yaakov Selkowitz <yselkowi@redhat.com> - 1.10.20-1
+- new version (#1508256)
+
 * Thu Aug 03 2017 Fedora Release Engineering <releng@fedoraproject.org> - 1.10.16-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Binutils_Mass_Rebuild
 
