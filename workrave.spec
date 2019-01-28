@@ -8,7 +8,6 @@ Release: 3%{?dist}
 Summary: Program that assists in the recovery and prevention of RSI
 # Based on older packages by Dag Wieers <dag@wieers.com> and Steve Ratcliffe
 License: GPLv3+
-Group: Applications/Productivity
 URL: http://www.workrave.org/
 %global tag %(echo %{version} | sed -e 's/\\./_/g')
 Source0: https://github.com/rcaelers/workrave/archive/v%{tag}/%{name}-v%{tag}.tar.gz
