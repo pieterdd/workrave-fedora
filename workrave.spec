@@ -4,7 +4,7 @@
 
 Name: workrave
 Version: 1.10.20
-Release: 4%{?dist}
+Release: 5%{?dist}
 Summary: Program that assists in the recovery and prevention of RSI
 # Based on older packages by Dag Wieers <dag@wieers.com> and Steve Ratcliffe
 License: GPLv3+
@@ -13,7 +13,8 @@ URL: http://www.workrave.org/
 Source0: https://github.com/rcaelers/workrave/archive/v%{tag}/%{name}-v%{tag}.tar.gz
 Patch1:  workrave-1.10.10-fix-translations.patch
 
-BuildRequires: libXtst-devel
+BuildRequires: gcc-c++
+BuildRequires: libX11-devel
 BuildRequires: libXScrnSaver-devel
 BuildRequires: pkgconfig(ice)
 BuildRequires: pkgconfig(sm)
@@ -27,7 +28,9 @@ BuildRequires: gobject-introspection-devel >= 0.6.7
 BuildRequires: pkgconfig(indicator3-0.4) >= 0.3.19
 BuildRequires: pkgconfig(dbusmenu-glib-0.4) >= 0.1.1
 BuildRequires: pkgconfig(dbusmenu-gtk3-0.4) >= 0.3.95
-BuildRequires: python-cheetah
+BuildRequires: python3
+BuildRequires: python3-devel
+BuildRequires: python3-cheetah
 BuildRequires: pkgconfig(gstreamer-1.0)
 BuildRequires: pkgconfig(libpulse) >= 0.9.15
 BuildRequires: pkgconfig(libpulse-mainloop-glib) >= 0.9.15
@@ -105,6 +108,11 @@ This package provides an applet for the Xfce panel.
 touch ChangeLog
 # https://bugzilla.redhat.com/show_bug.cgi?id=304121
 sed -i -e '/^DISTRIBUTION_HOME/s/\/$//' frontend/gtkmm/src/Makefile.*
+
+# upstream is python2
+2to3 --write --nobackups common/bin/dbusgen.py
+pathfix.py -pni %{__python3} common/bin/dbusgen.py
+sed -i 's/AC_CHECK_PROG(PYTHON, python, python)/AC_CHECK_PROG(PYTHON, python3, python3)/' configure.ac
 
 %build
 if [ ! -x configure ]; then
@@ -211,6 +219,9 @@ desktop-file-install \
 %endif
 
 %changelog
+* Fri Apr 12 2019 Lukas Zapletal <lzap+rpm@redhat.com> - 1.10.20-5
+- Updated X11 and python3 deps
+
 * Sun Feb 03 2019 Fedora Release Engineering <releng@fedoraproject.org> - 1.10.20-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
 
