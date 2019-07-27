@@ -4,7 +4,7 @@
 
 Name: workrave
 Version: 1.10.20
-Release: 5%{?dist}
+Release: 6%{?dist}
 Summary: Program that assists in the recovery and prevention of RSI
 # Based on older packages by Dag Wieers <dag@wieers.com> and Steve Ratcliffe
 License: GPLv3+
@@ -219,6 +219,9 @@ desktop-file-install \
 %endif
 
 %changelog
+* Sat Jul 27 2019 Fedora Release Engineering <releng@fedoraproject.org> - 1.10.20-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
+
 * Fri Apr 12 2019 Lukas Zapletal <lzap+rpm@redhat.com> - 1.10.20-5
 - Updated X11 and python3 deps
 
