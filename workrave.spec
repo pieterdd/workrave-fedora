@@ -3,15 +3,17 @@
 %global	xfce		1
 
 Name: workrave
-Version: 1.10.20
-Release: 7%{?dist}
+Version: 1.10.37
+Release: 1%{?dist}
 Summary: Program that assists in the recovery and prevention of RSI
 # Based on older packages by Dag Wieers <dag@wieers.com> and Steve Ratcliffe
 License: GPLv3+
 URL: http://www.workrave.org/
 %global tag %(echo %{version} | sed -e 's/\\./_/g')
 Source0: https://github.com/rcaelers/workrave/archive/v%{tag}/%{name}-v%{tag}.tar.gz
-Patch1:  workrave-1.10.10-fix-translations.patch
+
+Obsoletes: %{name}-gtk2 < 1.10.37-1
+Provides: %{name}-gtk2 = %{?epoch:%{epoch}:}%{version}-%{release}
 
 BuildRequires: gcc-c++
 BuildRequires: libX11-devel
@@ -28,9 +30,11 @@ BuildRequires: gobject-introspection-devel >= 0.6.7
 BuildRequires: pkgconfig(indicator3-0.4) >= 0.3.19
 BuildRequires: pkgconfig(dbusmenu-glib-0.4) >= 0.1.1
 BuildRequires: pkgconfig(dbusmenu-gtk3-0.4) >= 0.3.95
+BuildRequires: boost-devel
 BuildRequires: python3
 BuildRequires: python3-devel
 BuildRequires: python3-cheetah
+BuildRequires: python3-jinja2
 BuildRequires: pkgconfig(gstreamer-1.0)
 BuildRequires: pkgconfig(libpulse) >= 0.9.15
 BuildRequires: pkgconfig(libpulse-mainloop-glib) >= 0.9.15
@@ -72,18 +76,8 @@ Summary: Workrave applet for GNOME Flashback
 
 This package provides an applet for the GNOME Flashback panel.
 
-%package gtk2
-Requires: %{name} = %{version}-%{release}
-Summary: Support library for gtk2-based Workrave applets
-
-%description gtk2
-%{description}
-
-This package provides a support library for gtk2-based applets.
-
 %package mate
 Requires: %{name} = %{version}-%{release}
-Requires: %{name}-gtk2 = %{version}-%{release}
 Summary: Workrave applet for MATE
 
 %description mate
@@ -93,7 +87,6 @@ This package provides an applet for the MATE panel.
 
 %package xfce
 Requires: %{name} = %{version}-%{release}
-Requires: %{name}-gtk2 = %{version}-%{release}
 Summary: Workrave applet for Xfce
 
 %description xfce
@@ -104,14 +97,13 @@ This package provides an applet for the Xfce panel.
 
 %prep
 %setup -q -n workrave-%{tag}
-%patch1 -p1 -b .fixpl
 touch ChangeLog
 # https://bugzilla.redhat.com/show_bug.cgi?id=304121
 sed -i -e '/^DISTRIBUTION_HOME/s/\/$//' frontend/gtkmm/src/Makefile.*
 
 # upstream is python2
-2to3 --write --nobackups common/bin/dbusgen.py
-pathfix.py -pni %{__python3} common/bin/dbusgen.py
+2to3 --write --nobackups libs/dbus/bin/dbusgen.py
+pathfix.py -pni %{__python3} libs/dbus/bin/dbusgen.py
 sed -i 's/AC_CHECK_PROG(PYTHON, python, python)/AC_CHECK_PROG(PYTHON, python3, python3)/' configure.ac
 
 %build
@@ -171,7 +163,7 @@ desktop-file-install \
 %{_datadir}/icons/hicolor/128x128/apps/workrave.png
 %{_datadir}/icons/hicolor/scalable/workrave-sheep.svg
 %{_datadir}/icons/hicolor/scalable/apps/workrave.svg
-%{_datadir}/appdata/workrave.appdata.xml
+%{_datadir}/metainfo/workrave.appdata.xml
 %{_datadir}/applications/workrave.desktop
 %{_datadir}/dbus-1/services/org.workrave.Workrave.service
 %{_datadir}/glib-2.0/schemas/org.workrave.*.xml
@@ -199,14 +191,9 @@ desktop-file-install \
 %{_datadir}/gnome-panel/ui/workrave-gnome-applet-menu.xml
 %endif
 
-%if 0%{?mate} || 0%{?xfce}
-%files gtk2
-%{_libdir}/libworkrave-gtk2-private-1.0.so.*
-%endif
-
 %if 0%{?xfce}
 %files xfce
-%{_libdir}/xfce4/panel-plugins/xfce4-workrave-plugin
+%{_libdir}/xfce4/panel/plugins/libworkrave-plugin.so
 %{_datadir}/xfce4/panel-plugins/workrave-xfce-applet.desktop
 %endif
 
@@ -219,6 +206,9 @@ desktop-file-install \
 %endif
 
 %changelog
+* Fri Mar 27 2020 Lukas Zapletal <lzap+rpm@redhat.com> - 1.10.37-1
+- new version
+
 * Fri Jan 31 2020 Fedora Release Engineering <releng@fedoraproject.org> - 1.10.20-7
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
 
