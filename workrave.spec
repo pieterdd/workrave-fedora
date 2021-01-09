@@ -15,6 +15,7 @@ Source0: https://github.com/rcaelers/workrave/archive/v%{tag}/%{name}-v%{tag}.ta
 Obsoletes: %{name}-gtk2 < 1.10.37-1
 Provides: %{name}-gtk2 = %{?epoch:%{epoch}:}%{version}-%{release}
 
+BuildRequires: make
 BuildRequires: gcc-c++
 BuildRequires: libX11-devel
 BuildRequires: libXScrnSaver-devel
