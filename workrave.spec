@@ -4,13 +4,16 @@
 
 Name: workrave
 Version: 1.10.44
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: Program that assists in the recovery and prevention of RSI
 # Based on older packages by Dag Wieers <dag@wieers.com> and Steve Ratcliffe
 License: GPLv3+
 URL: http://www.workrave.org/
 %global tag %(echo %{version} | sed -e 's/\\./_/g')
 Source0: https://github.com/rcaelers/workrave/archive/v%{tag}/%{name}-v%{tag}.tar.gz
+
+# Upstream - https://github.com/rcaelers/workrave/commit/c596e32ebe5a0a6ded3b583e8a78df729ffde2d5
+Patch0: compile_against_xfce4-panel-4.15.patch
 
 Obsoletes: %{name}-gtk2 < 1.10.37-1
 Provides: %{name}-gtk2 = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -47,10 +50,10 @@ BuildRequires: desktop-file-utils
 BuildRequires: pkgconfig(libpanel-applet)
 %endif
 %if 0%{?xfce} || 0%{?mate}
-BuildRequires: pkgconfig(gtk+-2.0) >= 2.6.0
+BuildRequires: pkgconfig(gtk+-3.0)
 %endif
 %if 0%{?xfce}
-BuildRequires: pkgconfig(libxfce4panel-2.0) >= 4.4
+BuildRequires: pkgconfig(libxfce4panel-2.0) >= 4.12
 %endif
 %if 0%{?mate}
 BuildRequires: pkgconfig(libmatepanelapplet-4.0)
@@ -101,6 +104,8 @@ This package provides an applet for the Xfce panel.
 touch ChangeLog
 # https://bugzilla.redhat.com/show_bug.cgi?id=304121
 sed -i -e '/^DISTRIBUTION_HOME/s/\/$//' frontend/gtkmm/src/Makefile.*
+
+%patch0 -p1
 
 # upstream is python2
 2to3 --write --nobackups libs/dbus/bin/dbusgen.py
@@ -207,6 +212,9 @@ desktop-file-install \
 %endif
 
 %changelog
+* Mon Feb 08 2021 Mukundan Ragavan <nonamedotc@fedoraproject.org> - 1.10.44-3
+- Build against xfce-4.16
+
 * Wed Jan 27 2021 Fedora Release Engineering <releng@fedoraproject.org> - 1.10.44-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
 
