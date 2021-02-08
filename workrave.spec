@@ -50,7 +50,7 @@ BuildRequires: pkgconfig(libpanel-applet)
 BuildRequires: pkgconfig(gtk+-2.0) >= 2.6.0
 %endif
 %if 0%{?xfce}
-BuildRequires: pkgconfig(libxfce4panel-1.0) >= 4.4
+BuildRequires: pkgconfig(Libxfce4panel-1.0) >= 4.4
 %endif
 %if 0%{?mate}
 BuildRequires: pkgconfig(libmatepanelapplet-4.0)
