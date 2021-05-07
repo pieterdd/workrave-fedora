@@ -3,17 +3,14 @@
 %global	xfce		1
 
 Name: workrave
-Version: 1.10.44
-Release: 3%{?dist}
+Version: 1.10.45
+Release: 1%{?dist}
 Summary: Program that assists in the recovery and prevention of RSI
 # Based on older packages by Dag Wieers <dag@wieers.com> and Steve Ratcliffe
 License: GPLv3+
 URL: http://www.workrave.org/
 %global tag %(echo %{version} | sed -e 's/\\./_/g')
 Source0: https://github.com/rcaelers/workrave/archive/v%{tag}/%{name}-v%{tag}.tar.gz
-
-# Upstream - https://github.com/rcaelers/workrave/commit/c596e32ebe5a0a6ded3b583e8a78df729ffde2d5
-Patch0: compile_against_xfce4-panel-4.15.patch
 
 Obsoletes: %{name}-gtk2 < 1.10.37-1
 Provides: %{name}-gtk2 = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -105,7 +102,6 @@ touch ChangeLog
 # https://bugzilla.redhat.com/show_bug.cgi?id=304121
 sed -i -e '/^DISTRIBUTION_HOME/s/\/$//' frontend/gtkmm/src/Makefile.*
 
-%patch0 -p1
 
 # upstream is python2
 2to3 --write --nobackups libs/dbus/bin/dbusgen.py
@@ -212,6 +208,10 @@ desktop-file-install \
 %endif
 
 %changelog
+* Thu May 06 2021 Mukundan Ragavan <nonamedotc@fedoraproject.org> - 1.10.45-1
+- Update to 1.10.45
+- Drop upstreamed patch
+
 * Mon Feb 08 2021 Mukundan Ragavan <nonamedotc@fedoraproject.org> - 1.10.44-3
 - Build against xfce-4.16
 
