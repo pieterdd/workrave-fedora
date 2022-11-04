@@ -65,17 +65,19 @@ Recommends: gstreamer1-plugins-good
 %endif
 Obsoletes: %{name}-devel < %{version}-%{release}
 
-%description
-Workrave is a program that assists in the recovery and prevention of
-Repetitive Strain Injury (RSI). The program frequently alerts you to
+%global _description Workrave is a program that assists in the recovery and prevention of\
+Repetitive Strain Injury (RSI). The program frequently alerts you to\
 take micro-pauses, rest breaks and restricts you to your daily limit.
+
+%description
+%{_description}
 
 %package gnome-flashback
 Requires: %{name} = %{version}-%{release}
 Summary: Workrave applet for GNOME Flashback
 
 %description gnome-flashback
-%{description}
+%{_description}
 
 This package provides an applet for the GNOME Flashback panel.
 
@@ -84,7 +86,7 @@ Requires: %{name} = %{version}-%{release}
 Summary: Workrave applet for MATE
 
 %description mate
-%{description}
+%{_description}
 
 This package provides an applet for the MATE panel.
 
@@ -93,7 +95,7 @@ Requires: %{name} = %{version}-%{release}
 Summary: Workrave applet for Xfce
 
 %description xfce
-%{description}
+%{_description}
 
 This package provides an applet for the Xfce panel.
 
