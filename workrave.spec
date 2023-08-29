@@ -1,21 +1,19 @@
-%global	gnome_flashback	1
-%global	mate		1
-%global	xfce		1
+%bcond	gnome_flashback	1
+%bcond	mate		1
+%bcond	xfce		1
 
-Name: workrave
-Version: 1.10.50
-Release: %autorelease
-Summary: Program that assists in the recovery and prevention of RSI
+Name:          workrave
+Version:       1.10.50
+Release:       %autorelease
+Summary:       Program that assists in the recovery and prevention of RSI
 # Based on older packages by Dag Wieers <dag@wieers.com> and Steve Ratcliffe
-License: GPLv3+
-URL: http://www.workrave.org/
+License:       GPL-3.0-or-later
+URL:           https://workrave.org/
 %global tag %(echo %{version} | sed -e 's/\\./_/g')
-Source0: https://github.com/rcaelers/workrave/archive/v%{tag}/%{name}-v%{tag}.tar.gz
-# Support GNOME Shell 43, backport of https://github.com/rcaelers/workrave/pull/430
-Patch0:  578180d0982dd8f0dbe72574ae4758e6903691bb.patch
+Source0:       https://github.com/rcaelers/workrave/archive/v%{tag}/%{name}-v%{tag}.tar.gz
 
-Obsoletes: %{name}-gtk2 < 1.10.37-1
-Provides: %{name}-gtk2 = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:     %{name}-gtk2 < 1.10.37-1
+Provides:      %{name}-gtk2 = %{?epoch:%{epoch}:}%{version}-%{release}
 
 BuildRequires: make
 BuildRequires: gcc-c++
@@ -45,25 +43,25 @@ BuildRequires: gettext
 BuildRequires: intltool
 BuildRequires: autoconf, automake, libtool, autoconf-archive
 BuildRequires: desktop-file-utils
-%if 0%{?gnome_flashback}
+%if %{with gnome_flashback}
 BuildRequires: pkgconfig(libgnome-panel)
 %endif
-%if 0%{?xfce} || 0%{?mate}
+%if %{with xfce} || %{with mate}
 BuildRequires: pkgconfig(gtk+-3.0)
 %endif
-%if 0%{?xfce}
+%if %{with xfce}
 BuildRequires: pkgconfig(libxfce4panel-2.0) >= 4.12
 %endif
-%if 0%{?mate}
+%if %{with mate}
 BuildRequires: pkgconfig(libmatepanelapplet-4.0)
 %endif
 
-Requires: dbus
-%if 0%{?fedora}
-Recommends: gstreamer1-plugins-base
-Recommends: gstreamer1-plugins-good
+Requires:      dbus
+%if %{defined fedora}
+Recommends:    gstreamer1-plugins-base
+Recommends:    gstreamer1-plugins-good
 %endif
-Obsoletes: %{name}-devel < %{version}-%{release}
+Obsoletes:     %{name}-devel < %{version}-%{release}
 
 %global _description Workrave is a program that assists in the recovery and prevention of\
 Repetitive Strain Injury (RSI). The program frequently alerts you to\
@@ -73,8 +71,8 @@ take micro-pauses, rest breaks and restricts you to your daily limit.
 %{_description}
 
 %package gnome-flashback
-Requires: %{name} = %{version}-%{release}
-Summary: Workrave applet for GNOME Flashback
+Requires:      %{name} = %{version}-%{release}
+Summary:       Workrave applet for GNOME Flashback
 
 %description gnome-flashback
 %{_description}
@@ -82,8 +80,8 @@ Summary: Workrave applet for GNOME Flashback
 This package provides an applet for the GNOME Flashback panel.
 
 %package mate
-Requires: %{name} = %{version}-%{release}
-Summary: Workrave applet for MATE
+Requires:      %{name} = %{version}-%{release}
+Summary:       Workrave applet for MATE
 
 %description mate
 %{_description}
@@ -91,8 +89,8 @@ Summary: Workrave applet for MATE
 This package provides an applet for the MATE panel.
 
 %package xfce
-Requires: %{name} = %{version}-%{release}
-Summary: Workrave applet for Xfce
+Requires:      %{name} = %{version}-%{release}
+Summary:       Workrave applet for Xfce
 
 %description xfce
 %{_description}
@@ -101,8 +99,7 @@ This package provides an applet for the Xfce panel.
 
 
 %prep
-%setup -q -n workrave-%{tag}
-%patch0 -p1
+%autosetup -n workrave-%{tag} -p1
 touch ChangeLog
 # https://bugzilla.redhat.com/show_bug.cgi?id=304121
 sed -i -e '/^DISTRIBUTION_HOME/s/\/$//' frontend/gtkmm/src/Makefile.*
@@ -121,27 +118,27 @@ fi
 
 # gnome3 is flashback panel applet, not gnome-shell
 %configure \
-%if 0%{?gnome_flashback}
+%if %{with gnome_flashback}
   --enable-gnome3 \
 %else
   --disable-gnome3 \
 %endif
-%if 0%{?mate}
+%if %{with mate}
   --enable-mate \
 %else
   --disable-mate \
 %endif
-%if 0%{?xfce}
+%if %{with xfce}
   --enable-xfce \
 %else
   --disable-xfce \
 %endif
   --disable-static --disable-xml
 
-make V=1 %{_smp_mflags}
+%make_build
 
 %install
-make install DESTDIR=%{buildroot}
+%make_install
 
 find %{buildroot} -name '*.la' -delete
 # workrave does not provide a public API
@@ -150,10 +147,7 @@ rm -f %{buildroot}%{_libdir}/*.so
 
 %find_lang %{name}
 
-desktop-file-install \
-  --dir %{buildroot}%{_datadir}/applications \
-  --delete-original \
-  %{buildroot}%{_datadir}/applications/%{name}.desktop
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %files -f %{name}.lang
@@ -190,18 +184,18 @@ desktop-file-install \
 %dir %{_libdir}/indicators3/7/
 %{_libdir}/indicators3/7/libworkrave.so
 
-%if 0%{?gnome_flashback}
+%if %{with gnome_flashback}
 %files gnome-flashback
 %{_libdir}/gnome-panel/modules/libworkrave-applet.so
 %endif
 
-%if 0%{?xfce}
+%if %{with xfce}
 %files xfce
 %{_libdir}/xfce4/panel/plugins/libworkrave-plugin.so
 %{_datadir}/xfce4/panel/plugins/workrave-xfce-applet.desktop
 %endif
 
-%if 0%{?mate}
+%if %{with mate}
 %files mate
 %{_libdir}/mate-applets/workrave-applet
 %{_datadir}/dbus-1/services/org.mate.panel.applet.WorkraveAppletFactory.service
