@@ -1,13 +1,14 @@
+%bcond	gnome		1
 %bcond	gnome_flashback	1
 %bcond	mate		1
 %bcond	xfce		1
 
 Name:          workrave
-Version:       1.10.50
+Version:       1.10.51.1
 Release:       %autorelease
 Summary:       Program that assists in the recovery and prevention of RSI
 # Based on older packages by Dag Wieers <dag@wieers.com> and Steve Ratcliffe
-License:       GPL-3.0-or-later
+License:       GPL-3.0-or-later AND LGPL-2.0-or-later
 URL:           https://workrave.org/
 %global tag %(echo %{version} | sed -e 's/\\./_/g')
 Source0:       https://github.com/rcaelers/workrave/archive/v%{tag}/%{name}-v%{tag}.tar.gz
@@ -28,9 +29,6 @@ BuildRequires: pkgconfig(sigc++-2.0) >= 2.2.4.2
 BuildRequires: pkgconfig(glibmm-2.4) >= 2.28.0
 BuildRequires: pkgconfig(gtkmm-3.0) >= 3.0.0
 BuildRequires: gobject-introspection-devel >= 0.6.7
-BuildRequires: pkgconfig(indicator3-0.4) >= 0.3.19
-BuildRequires: pkgconfig(dbusmenu-glib-0.4) >= 0.1.1
-BuildRequires: pkgconfig(dbusmenu-gtk3-0.4) >= 0.3.95
 BuildRequires: boost-devel
 BuildRequires: python3
 BuildRequires: python3-devel
@@ -46,8 +44,8 @@ BuildRequires: desktop-file-utils
 %if %{with gnome_flashback}
 BuildRequires: pkgconfig(libgnome-panel)
 %endif
-%if %{with xfce} || %{with mate}
-BuildRequires: pkgconfig(gtk+-3.0)
+%if %{with gnome}
+BuildRequires: pkgconfig(gtk4)
 %endif
 %if %{with xfce}
 BuildRequires: pkgconfig(libxfce4panel-2.0) >= 4.12
@@ -56,11 +54,14 @@ BuildRequires: pkgconfig(libxfce4panel-2.0) >= 4.12
 BuildRequires: pkgconfig(libmatepanelapplet-4.0)
 %endif
 
-Requires:      dbus
-%if %{defined fedora}
+Requires:      dbus-common
+Recommends:    (%{name}-cinnamon if cinnamon)
+Recommends:    (%{name}-gnome if gnome-shell)
+Recommends:    (%{name}-gnome-flashback if gnome-panel)
+Recommends:    (%{name}-mate if mate-panel)
+Recommends:    (%{name}-xfce if xfce4-panel)
 Recommends:    gstreamer1-plugins-base
 Recommends:    gstreamer1-plugins-good
-%endif
 Obsoletes:     %{name}-devel < %{version}-%{release}
 
 %global _description Workrave is a program that assists in the recovery and prevention of\
@@ -69,6 +70,24 @@ take micro-pauses, rest breaks and restricts you to your daily limit.
 
 %description
 %{_description}
+
+%package cinnamon
+Requires:      %{name} = %{version}-%{release}
+Summary:       Workrave applet for Cinnamon desktop
+
+%description cinnamon
+%{_description}
+
+This package provides an applet for the Cinnamon desktop.
+
+%package gnome
+Requires:      %{name} = %{version}-%{release}
+Summary:       Workrave applet for GNOME desktop
+
+%description gnome
+%{_description}
+
+This package provides an applet for the GNOME desktop.
 
 %package gnome-flashback
 Requires:      %{name} = %{version}-%{release}
@@ -133,6 +152,7 @@ fi
 %else
   --disable-xfce \
 %endif
+  --disable-indicator \
   --disable-static --disable-xml
 
 %make_build
@@ -171,18 +191,20 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 # support library for gtk3 applets
 %{_libdir}/girepository-1.0/Workrave-1.0.typelib
 %{_libdir}/libworkrave-private-1.0.so.*
-# gnome-shell extension
-%dir %{_datadir}/gnome-shell/
-%dir %{_datadir}/gnome-shell/extensions/
-%{_datadir}/gnome-shell/extensions/workrave@workrave.org/
-# cinnamon applet
+
+%files cinnamon
 %dir %{_datadir}/cinnamon/
 %dir %{_datadir}/cinnamon/applets/
 %{_datadir}/cinnamon/applets/workrave@workrave.org/
-# indicator applet
-%dir %{_libdir}/indicators3/
-%dir %{_libdir}/indicators3/7/
-%{_libdir}/indicators3/7/libworkrave.so
+
+%if %{with gnome}
+%files gnome
+%{_libdir}/girepository-1.0/Workrave-2.0.typelib
+%{_libdir}/libworkrave-gtk4-private-1.0.so.*
+%dir %{_datadir}/gnome-shell/
+%dir %{_datadir}/gnome-shell/extensions/
+%{_datadir}/gnome-shell/extensions/workrave@workrave.org/
+%endif
 
 %if %{with gnome_flashback}
 %files gnome-flashback
