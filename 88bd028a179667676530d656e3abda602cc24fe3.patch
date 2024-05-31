@@ -1,0 +1,22 @@
+From 88bd028a179667676530d656e3abda602cc24fe3 Mon Sep 17 00:00:00 2001
+From: Rob Caelers <rob.caelers@gmail.com>
+Date: Sun, 5 May 2024 21:46:52 +0200
+Subject: [PATCH] Fix compilation error
+
+---
+ ui/app/toolkits/gtkmm/LoginSession.cc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/ui/app/toolkits/gtkmm/LoginSession.cc b/ui/app/toolkits/gtkmm/LoginSession.cc
+index 426b7bbbb..9b0f0fca3 100644
+--- a/ui/app/toolkits/gtkmm/LoginSession.cc
++++ b/ui/app/toolkits/gtkmm/LoginSession.cc
+@@ -79,7 +79,7 @@ LoginSession::on_signal(const Glib::ustring &sender, const Glib::ustring &signal
+           Glib::Variant<bool> start;
+           params.get_child(start);
+           auto core = context->get_core();
+-          core->set_powersave(start);
++          core->set_powersave(start.get());
+         }
+     }
+ #if GLIBMM_CHECK_VERSION(2, 68, 0)

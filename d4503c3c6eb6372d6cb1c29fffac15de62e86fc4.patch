@@ -1,0 +1,68 @@
+From d4503c3c6eb6372d6cb1c29fffac15de62e86fc4 Mon Sep 17 00:00:00 2001
+From: Rob Caelers <rob.caelers@gmail.com>
+Date: Sat, 4 May 2024 19:07:20 +0200
+Subject: [PATCH] Add WITH_WAYLAND option
+
+---
+ CMakeLists.txt | 33 ++++++++++++++++++++++++++-------
+ 1 file changed, 26 insertions(+), 7 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 084deda95..33430f2fa 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -415,14 +415,7 @@ if ("${WITH_UI}" STREQUAL "Qt")
+   endif()
+ endif()
+ 
+-if (UNIX AND NOT APPLE)
+-  pkg_check_modules(WAYLAND_CLIENT REQUIRED wayland-client)
+ 
+-  find_program(WAYLAND_SCANNER wayland-scanner)
+-  if (NOT WAYLAND_SCANNER)
+-    message(FATAL_ERROR "wayland-scanner not found")
+-  endif()
+-endif()
+ 
+ #----------------------------------------------------------------------------------------------------
+ # GStreamer
+@@ -693,6 +686,31 @@ endif()
+ 
+ find_package(Boost ${BOOST_MIN_VERSION} REQUIRED COMPONENTS ${BOOST_COMPONENTS})
+ 
++#----------------------------------------------------------------------------------------------------
++# Wayland
++
++option(WITH_WAYLAND "Enable Wayland support" ON)
++
++if (UNIX AND NOT APPLE)
++  if (WITH_WAYLAND)
++    message(STATUS "Checking for: Wayland")
++
++    pkg_check_modules(WAYLAND_CLIENT wayland-client)
++
++    find_program(WAYLAND_SCANNER wayland-scanner)
++    if (NOT WAYLAND_SCANNER)
++      message(ERROR "wayland-scanner not found")
++    endif()
++
++    if (WAYLAND_CLIENT_FOUND AND WAYLAND_SCANNER)
++      set (HAVE_WAYLAND ON)
++    else()
++      set (WITH_WAYLAND OFF)
++    endif()
++  endif()
++endif()
++
++
+ #----------------------------------------------------------------------------------------------------
+ # Translations
+ 
+@@ -1145,6 +1163,7 @@ feature_bool("Legacy StatusIcon" HAVE_STATUSICON  )
+ feature_bool("DBus Menus" HAVE_DBUSMENU)
+ feature_bool("GStreamer" HAVE_GSTREAMER)
+ feature_bool("Pulseaudio" HAVE_PULSE)
++feature_bool("Wayland" HAVE_WAYLAND)
+ endif()
+ feature_bool("DBUS" HAVE_DBUS)
+ if(PLATFORM_OS_WINDOWS)

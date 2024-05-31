@@ -1,0 +1,44 @@
+From 4f91739328fe57b14977ffa9bc16fe8d3daebffd Mon Sep 17 00:00:00 2001
+From: Rob Caelers <rob.caelers@gmail.com>
+Date: Sun, 5 May 2024 15:01:29 +0200
+Subject: [PATCH] Fix crash in dbus menu
+
+---
+ ui/app/toolkits/gtkmm/platforms/unix/DbusMenu.cc | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/ui/app/toolkits/gtkmm/platforms/unix/DbusMenu.cc b/ui/app/toolkits/gtkmm/platforms/unix/DbusMenu.cc
+index 8cc497c47..9ec8885ea 100644
+--- a/ui/app/toolkits/gtkmm/platforms/unix/DbusMenu.cc
++++ b/ui/app/toolkits/gtkmm/platforms/unix/DbusMenu.cc
+@@ -136,6 +136,7 @@ DbusSubMenuEntry::init()
+       g_list_free(c);
+       children.clear();
+       //   g_object_unref(item);
++      item = nullptr;
+     }
+   item = new_item;
+ 
+@@ -152,13 +153,12 @@ DbusSubMenuEntry::add(DbusmenuMenuitem *child)
+   dbusmenu_menuitem_child_append(item, child);
+ };
+ 
+-void DbusSubMenuEntry::add_section(){};
++void DbusSubMenuEntry::add_section() {};
+ 
+ //////////////////////////////////////////////////////////////////////
+ 
+ DbusRadioGroupMenuEntry::DbusRadioGroupMenuEntry(DbusSubMenuEntry *parent, menus::RadioGroupNode::Ptr node)
+ {
+-  item = parent->get_item();
+   for (auto child_node: node->get_children())
+     {
+       auto child = std::make_shared<DbusRadioMenuEntry>(parent, child_node);
+@@ -291,7 +291,6 @@ DbusSeparatorMenuEntry::DbusSeparatorMenuEntry(DbusSubMenuEntry *parent, menus::
+ 
+ DbusSectionMenuEntry::DbusSectionMenuEntry(DbusSubMenuEntry *parent, menus::SectionNode::Ptr node)
+ {
+-  item = parent->get_item();
+   for (auto child_node: node->get_children())
+     {
+       auto child = DbusMenuEntryFactory::create(parent, child_node);
