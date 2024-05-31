@@ -1,58 +1,53 @@
-%if 0%{?fedora} || 0%{?rhel} >= 9
 %bcond	gnome		1
 %bcond	gnome40		1
-%bcond	gnome45		%[0%{?fedora} >= 39 || 0%{?rhel} >= 10]
-%bcond	gnome_flashback	1
-%bcond	mate		1
-%bcond	xfce		1
-%else
-%bcond_without	gnome
-%bcond_with	gnome40
-%bcond_with	gnome45
-%bcond_with	gnome_flashback
-%bcond_without	mate
-%bcond_without	xfce
-%endif
+%bcond	gnome45		%[0%{?fedora} || 0%{?rhel} >= 10]
+%bcond	gnome_flashback	%{undefined flatpak}
+%bcond	mate		%{undefined flatpak}
+%bcond	xfce		%{undefined flatpak}
+
+%global app_id org.workrave.Workrave
 
 Name:          workrave
-Version:       1.10.52
+Version:       1.11.0~beta.12
 Release:       %autorelease
 Summary:       Program that assists in the recovery and prevention of RSI
 # Based on older packages by Dag Wieers <dag@wieers.com> and Steve Ratcliffe
 License:       GPL-3.0-or-later AND LGPL-2.0-or-later
 URL:           https://workrave.org/
-%global tag %(echo %{version} | sed -e 's/\\./_/g')
+%global tag %(echo %{version} | sed -e 's/[\\.~]/_/g')
 Source0:       https://github.com/rcaelers/workrave/archive/v%{tag}/%{name}-v%{tag}.tar.gz
 
-Obsoletes:     %{name}-gtk2 < 1.10.37-1
-Provides:      %{name}-gtk2 = %{?epoch:%{epoch}:}%{version}-%{release}
-
-BuildRequires: make
+BuildRequires: cmake
+BuildRequires: desktop-file-utils
+BuildRequires: gettext
 BuildRequires: gcc-c++
-BuildRequires: libX11-devel
-BuildRequires: libXScrnSaver-devel
-BuildRequires: pkgconfig(ice)
-BuildRequires: pkgconfig(sm)
-BuildRequires: pkgconfig(xtst)
-BuildRequires: pkgconfig(glib-2.0) >= 2.28.0
-BuildRequires: pkgconfig(gio-2.0) >= 2.26.0
-BuildRequires: pkgconfig(gtk+-3.0) >= 3.0.0
-BuildRequires: pkgconfig(sigc++-2.0) >= 2.2.4.2
-BuildRequires: pkgconfig(glibmm-2.4) >= 2.28.0
-BuildRequires: pkgconfig(gtkmm-3.0) >= 3.0.0
-BuildRequires: gobject-introspection-devel >= 0.6.7
+BuildRequires: libappstream-glib
+# Base dependencies
 BuildRequires: boost-devel
-BuildRequires: python3
 BuildRequires: python3-devel
-BuildRequires: python3-cheetah
 BuildRequires: python3-jinja2
+# Gtk+3 interface
+BuildRequires: pkgconfig(glib-2.0) >= 2.56.0
+BuildRequires: pkgconfig(gio-2.0) >= 2.56.0
+BuildRequires: pkgconfig(gtk+-3.0) >= 3.22.0
+BuildRequires: pkgconfig(glibmm-2.4) >= 2.28.0
+BuildRequires: pkgconfig(gtkmm-3.0) >= 3.22.0
+# Sound support
 BuildRequires: pkgconfig(gstreamer-1.0)
 BuildRequires: pkgconfig(libpulse) >= 0.9.15
 BuildRequires: pkgconfig(libpulse-mainloop-glib) >= 0.9.15
-BuildRequires: gettext
-BuildRequires: intltool
-BuildRequires: autoconf, automake, libtool, autoconf-archive
-BuildRequires: desktop-file-utils
+# Wayland support
+BuildRequires: pkgconfig(wayland-client)
+BuildRequires: pkgconfig(wayland-scanner)
+# X11 support
+BuildRequires: libX11-devel
+BuildRequires: libXScrnSaver-devel
+BuildRequires: libXtst-devel
+# Desktop applets
+BuildRequires: pkgconfig(ayatana-appindicator3-0.1)
+BuildRequires: pkgconfig(dbusmenu-glib-0.4)
+BuildRequires: pkgconfig(dbusmenu-gtk3-0.4)
+BuildRequires: pkgconfig(gobject-introspection-1.0)
 %if %{with gnome_flashback}
 BuildRequires: pkgconfig(libgnome-panel)
 %endif
@@ -63,10 +58,14 @@ BuildRequires: pkgconfig(gtk4)
 BuildRequires: pkgconfig(libxfce4panel-2.0) >= 4.12
 %endif
 %if %{with mate}
-BuildRequires: pkgconfig(libmatepanelapplet-4.0)
+BuildRequires: pkgconfig(libmatepanelapplet-4.0) >= 1.20.0
 %endif
+# Logging
+BuildRequires: cmake(fmt)
+BuildRequires: cmake(spdlog)
 
 Requires:      dbus-common
+Requires:      hicolor-icon-theme
 Recommends:    (%{name}-cinnamon if cinnamon)
 Recommends:    (%{name}-gnome if gnome-shell)
 Recommends:    (%{name}-gnome-flashback if gnome-panel)
@@ -87,7 +86,7 @@ take micro-pauses, rest breaks and restricts you to your daily limit.
 %{_description}
 
 %package cinnamon
-Requires:      %{name} = %{version}-%{release}
+Requires:      %{name}%{?_isa} = %{version}-%{release}
 Summary:       Workrave applet for Cinnamon desktop
 
 %description cinnamon
@@ -96,7 +95,7 @@ Summary:       Workrave applet for Cinnamon desktop
 This package provides an applet for the Cinnamon desktop.
 
 %package gnome
-Requires:      %{name} = %{version}-%{release}
+Requires:      %{name}%{?_isa} = %{version}-%{release}
 Summary:       Workrave applet for GNOME desktop
 
 %description gnome
@@ -105,7 +104,7 @@ Summary:       Workrave applet for GNOME desktop
 This package provides an applet for the GNOME desktop.
 
 %package gnome-flashback
-Requires:      %{name} = %{version}-%{release}
+Requires:      %{name}%{?_isa} = %{version}-%{release}
 Summary:       Workrave applet for GNOME Flashback
 
 %description gnome-flashback
@@ -114,7 +113,7 @@ Summary:       Workrave applet for GNOME Flashback
 This package provides an applet for the GNOME Flashback panel.
 
 %package mate
-Requires:      %{name} = %{version}-%{release}
+Requires:      %{name}%{?_isa} = %{version}-%{release}
 Summary:       Workrave applet for MATE
 
 %description mate
@@ -123,7 +122,7 @@ Summary:       Workrave applet for MATE
 This package provides an applet for the MATE panel.
 
 %package xfce
-Requires:      %{name} = %{version}-%{release}
+Requires:      %{name}%{?_isa} = %{version}-%{release}
 Summary:       Workrave applet for Xfce
 
 %description xfce
@@ -134,77 +133,56 @@ This package provides an applet for the Xfce panel.
 
 %prep
 %autosetup -n workrave-%{tag} -p1
-touch ChangeLog
-# https://bugzilla.redhat.com/show_bug.cgi?id=304121
-sed -i -e '/^DISTRIBUTION_HOME/s/\/$//' frontend/gtkmm/src/Makefile.*
-
 
 # use versioned python command
 %py3_shebang_fix libs/dbus/bin/dbusgen.py
-sed -i 's/AC_CHECK_PROG(PYTHON, python, python)/AC_CHECK_PROG(PYTHON, python3, python3)/' configure.ac
+
 
 %build
-if [ ! -x configure ]; then
-  ### Needed for snapshot releases.
-  NOCONFIGURE=1 ./autogen.sh
-fi
+%cmake \
+  -DWITH_GNOME_CLASSIC_PANEL:BOOL=%{?with_gnome_flashback:ON}%{!?with_gnome_flashback:OFF} \
+  -DWITH_GNOME45:BOOL=%{?with_gnome45:ON}%{!?with_gnome45:OFF} \
+  -DWITH_MATE:BOOL=%{?with_mate:ON}%{!?with_mate:OFF} \
+  -DWITH_XFCE4:BOOL=%{?with_xfce:ON}%{!?with_xfce:OFF} \
+  -DWITH_DBUS:BOOL=ON \
+  -DWITH_GSTREAMER:BOOL=ON \
+  -DWITH_PULSE:BOOL=ON \
+  -DWITH_DBUSMENU:BOOL=ON \
+  -DWITH_INDICATOR:BOOL=ON \
+  -DWITH_APPINDICATOR:BOOL=ON \
+  -DWITH_WAYLAND:BOOL=ON \
+  %{nil}
 
-# gnome3 is flashback panel applet, not gnome-shell
-%configure \
-%if %{with gnome_flashback}
-  --enable-gnome3 \
-%else
-  --disable-gnome3 \
-%endif
-%if %{with gnome45}
-  --enable-gnome45 \
-%endif
-%if %{with mate}
-  --enable-mate \
-%else
-  --disable-mate \
-%endif
-%if %{with xfce}
-  --enable-xfce \
-%else
-  --disable-xfce \
-%endif
-  --disable-indicator \
-  --disable-static --disable-xml
+%cmake_build
 
-%make_build
 
 %install
-%make_install
+%cmake_install
 
-find %{buildroot} -name '*.la' -delete
 # workrave does not provide a public API
 rm -f %{buildroot}%{_datadir}/gir-1.0/*.gir
 rm -f %{buildroot}%{_libdir}/*.so
+# indicators need to be enabled to build GIR but are not needed otherwise
+rm -f %{buildroot}%{_libdir}/*indicators3/7/libworkrave.so*
 
 %find_lang %{name}
 
-desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+
+%check
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{app_id}.desktop
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{app_id}.metainfo.xml
 
 
 %files -f %{name}.lang
 %doc AUTHORS COPYING NEWS README.md
-%{_bindir}/workrave
-%{_datadir}/workrave/
-%{_datadir}/sounds/workrave/
-%{_datadir}/icons/hicolor/16x16/apps/workrave.png
-%{_datadir}/icons/hicolor/24x24/apps/workrave.png
-%{_datadir}/icons/hicolor/32x32/apps/workrave.png
-%{_datadir}/icons/hicolor/48x48/apps/workrave.png
-%{_datadir}/icons/hicolor/64x64/apps/workrave.png
-%{_datadir}/icons/hicolor/96x96/apps/workrave.png
-%{_datadir}/icons/hicolor/128x128/apps/workrave.png
-%{_datadir}/icons/hicolor/scalable/workrave-sheep.svg
-%{_datadir}/icons/hicolor/scalable/apps/workrave.svg
-%{_datadir}/metainfo/workrave.appdata.xml
-%{_datadir}/applications/workrave.desktop
-%{_datadir}/dbus-1/services/org.workrave.Workrave.service
+%{_bindir}/%{name}
+%{_datadir}/applications/%{app_id}.desktop
+%{_datadir}/dbus-1/services/%{app_id}.service
 %{_datadir}/glib-2.0/schemas/org.workrave.*.xml
+%{_datadir}/icons/hicolor/*/apps/%{name}.*
+%{_datadir}/sounds/%{name}/
+%{_datadir}/%{name}/
+%{_metainfodir}/%{app_id}.metainfo.xml
 # support library for gtk3 applets
 %{_libdir}/girepository-1.0/Workrave-1.0.typelib
 %{_libdir}/libworkrave-private-1.0.so.*
