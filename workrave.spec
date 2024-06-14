@@ -8,7 +8,7 @@
 %global app_id org.workrave.Workrave
 
 Name:          workrave
-Version:       1.11.0~beta.12
+Version:       1.11.0~beta.13
 Release:       %autorelease
 Summary:       Program that assists in the recovery and prevention of RSI
 # Based on older packages by Dag Wieers <dag@wieers.com> and Steve Ratcliffe
@@ -16,13 +16,6 @@ License:       GPL-3.0-or-later AND LGPL-2.0-or-later
 URL:           https://workrave.org/
 %global tag %(echo %{version} | sed -e 's/[\\.~]/_/g')
 Source:        https://github.com/rcaelers/workrave/archive/v%{tag}/%{name}-v%{tag}.tar.gz
-# upstream post-release patches
-Patch:         https://github.com/rcaelers/workrave/commit/d4503c3c6eb6372d6cb1c29fffac15de62e86fc4.patch
-Patch:         https://github.com/rcaelers/workrave/commit/a4c0951f296c6ea1a0c2a64df3c243c436246902.patch
-Patch:         https://github.com/rcaelers/workrave/commit/4f91739328fe57b14977ffa9bc16fe8d3daebffd.patch
-Patch:         https://github.com/rcaelers/workrave/commit/e9cf499f0360d03ba32ab66ac4c439877cc9574e.patch
-Patch:         https://github.com/rcaelers/workrave/commit/88bd028a179667676530d656e3abda602cc24fe3.patch
-Patch:         https://github.com/rcaelers/workrave/commit/67303e8d67491318bc600a74b5f893082458f5b3.patch
 
 BuildRequires: cmake
 BuildRequires: desktop-file-utils
